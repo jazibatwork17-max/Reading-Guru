@@ -1590,27 +1590,20 @@ textarea.form-control {
 }
 
 .btn-auth-trigger {
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.25rem;
   background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 0.45rem 0.75rem;
-  font-size: 0.75rem;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.85rem;
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
   transition: var(--transition-fast);
   box-shadow: 0 4px 10px rgba(99, 102, 241, 0.15);
-}
-
-.btn-auth-trigger svg {
-  display: block;
-  flex-shrink: 0;
 }
 
 .btn-auth-trigger:hover {
@@ -1776,13 +1769,7 @@ textarea.form-control {
   .cloud-mode-badge {
     padding: 0.3rem;
   }
-  .btn-auth-trigger span {
-    display: none; /* Hide Sign In label on mobile */
-  }
-  .btn-auth-trigger {
-    padding: 0.55rem;
-    border-radius: 50%;
-  }
+  /* Keeping Sign In label visible on mobile as it has no icon */
 }
 
 
