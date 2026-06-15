@@ -163,6 +163,7 @@ header {
   background: linear-gradient(135deg, var(--text-primary) 30%, var(--color-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  white-space: nowrap;
 }
 
 .logo svg {
@@ -1266,4 +1267,74 @@ textarea.form-control {
 .alert-banner svg {
   flex-shrink: 0;
   stroke: var(--color-warning);
+}
+
+/* ==========================================
+   RESPONSIVE MEDIA QUERIES (MOBILE FIXES)
+   ========================================= */
+@media (max-width: 768px) {
+  header {
+    padding: 0.85rem 1rem;
+  }
+  
+  main {
+    padding: 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .logo {
+    font-size: 1.15rem;
+  }
+  
+  .logo svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .nav-btn {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.85rem;
+  }
+  
+  .nav-btn span {
+    display: none; /* Hide text on mobile, keep only icons for layout */
+  }
+  
+  .nav-btn svg {
+    margin-right: 0 !important;
+  }
+  
+  .theme-toggle-btn {
+    width: 36px;
+    height: 36px;
+    margin-left: 0.25rem;
+  }
+  
+  .library-grid {
+    grid-template-columns: 1fr; /* Stack cards vertically on small phones */
+    gap: 1.25rem;
+  }
+  
+  .library-title h1 {
+    font-size: 1.8rem;
+  }
+  
+  .reading-board {
+    padding: 1.5rem; /* Reduce padding for reading text container */
+  }
+  
+  .reading-text {
+    font-size: 1.45rem; /* Slightly smaller text for readability on small viewports */
+    line-height: 1.8;
+  }
+  
+  .analysis-text-panel {
+    padding: 1.5rem;
+  }
+  
+  .analysis-words {
+    font-size: 1.35rem;
+    line-height: 1.7;
+  }
 }
