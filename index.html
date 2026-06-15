@@ -558,6 +558,24 @@
           <p class="auth-switch-tip">Already have an account? <a href="#" id="link-show-signin">Sign In</a></p>
         </div>
       </form>
+
+      <!-- Divider -->
+      <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin: 0 1.5rem 1rem 1.5rem;">
+        <span style="height: 1px; background: var(--panel-border); flex: 1;"></span>
+        <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase;">or</span>
+        <span style="height: 1px; background: var(--panel-border); flex: 1;"></span>
+      </div>
+      
+      <!-- Google Sign In Button -->
+      <button id="btn-google-auth" class="btn" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: #ffffff; color: #1d1d1f; border: 1px solid #d2d2d7; margin: 0 1.5rem 1.5rem 1.5rem; width: calc(100% - 3rem); font-weight: 600; font-size: 0.88rem; padding: 0.65rem 1rem; border-radius: 8px; cursor: pointer; transition: background 0.2s ease;">
+        <svg width="18" height="18" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.69c-.29 1.5-1.14 2.78-2.4 3.62v3.02h3.87c2.26-2.08 3.58-5.14 3.58-8.49z"/>
+          <path fill="#34A853" d="M12 24c3.24 0 5.97-1.08 7.96-2.91l-3.87-3.02c-1.08.72-2.45 1.16-4.09 1.16-3.15 0-5.81-2.13-6.76-5.01H1.32v3.12C3.3 21.28 7.37 24 12 24z"/>
+          <path fill="#FBBC05" d="M5.24 14.22c-.25-.72-.39-1.5-.39-2.31 0-.81.14-1.59.39-2.31V6.48H1.32C.48 8.16 0 10.02 0 12s.48 3.84 1.32 5.52l3.92-3.3z"/>
+          <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.44-3.44C17.97 1.19 15.24 0 12 0 7.37 0 3.3 2.72 1.32 6.48l3.92 3.12c.95-2.88 3.61-5.01 6.76-5.01z"/>
+        </svg>
+        Sign In with Google
+      </button>
     </div>
   </div>
 

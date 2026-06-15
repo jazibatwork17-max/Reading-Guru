@@ -165,6 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCloseAuthModal = document.getElementById('btn-close-auth-modal');
   const authErrorBanner = document.getElementById('auth-error-banner');
   const authErrorMsg = document.getElementById('auth-error-msg');
+  const btnGoogleAuth = document.getElementById('btn-google-auth');
   
   const formSignIn = document.getElementById('form-sign-in');
   const signinEmail = document.getElementById('signin-email');
@@ -1749,6 +1750,26 @@ document.addEventListener('DOMContentLoaded', () => {
           .catch((error) => {
             console.error(error);
             showAuthError(error.message || "Failed to create account.");
+          });
+      });
+    }
+
+    // Handle Google Sign In click
+    if (btnGoogleAuth) {
+      btnGoogleAuth.addEventListener('click', () => {
+        if (!isFirebaseActive || !auth) {
+          showAuthError("Firebase is not initialized. Please configure credentials in app.js.");
+          return;
+        }
+        clearAuthError();
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+          .then(() => {
+            if (modalAuth) modalAuth.classList.remove('active');
+          })
+          .catch((error) => {
+            console.error(error);
+            showAuthError(error.message || "Google Sign-In failed.");
           });
       });
     }
