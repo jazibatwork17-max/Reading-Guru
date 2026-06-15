@@ -254,10 +254,27 @@ document.addEventListener('DOMContentLoaded', () => {
         cloudHistoryMap[data.id || doc.id] = data;
       });
       
-      // 2. Fetch local storage records
-      const localHistory = JSON.parse(localStorage.getItem('lumina_reading_history') || '[]');
+      // 2. Fetch user-specific local storage records
+      const userHistoryKey = `lumina_history_${uid}`;
+      const localHistory = JSON.parse(localStorage.getItem(userHistoryKey) || '[]');
       
-      // 3. Upload local records that are not in cloud history
+      // 3. Fetch anonymous local storage records to merge (e.g. first-time login)
+      const anonymousHistory = JSON.parse(localStorage.getItem('lumina_reading_history') || '[]');
+      
+      // 4. Merge any anonymous history into user's account
+      if (anonymousHistory.length > 0) {
+        for (const anonSession of anonymousHistory) {
+          const sid = anonSession.id;
+          if (!cloudHistoryMap[sid]) {
+            await db.collection('users').doc(uid).collection('history').doc(sid).set(anonSession);
+            cloudHistoryMap[sid] = anonSession;
+          }
+        }
+        // Clear anonymous storage so it doesn't linger after sign-out or get merged into another user's account
+        localStorage.removeItem('lumina_reading_history');
+      }
+
+      // 5. Upload local user-specific records that are not in cloud history
       for (const localSession of localHistory) {
         const sid = localSession.id;
         if (!cloudHistoryMap[sid]) {
@@ -266,12 +283,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
       
-      // 4. Update the local cache and readingHistory state with the full sorted list
+      // 6. Update the user-specific cache and readingHistory state with the full sorted list
       const mergedHistory = Object.values(cloudHistoryMap).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
       readingHistory = mergedHistory;
-      localStorage.setItem('lumina_reading_history', JSON.stringify(readingHistory));
+      localStorage.setItem(userHistoryKey, JSON.stringify(readingHistory));
       
-      // 5. Reload dashboard history UI
+      // 7. Reload dashboard history UI
       loadDashboardHistory();
       
     } catch (e) {
@@ -1214,11 +1231,15 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     readingHistory.push(sessionReport);
-    localStorage.setItem('lumina_reading_history', JSON.stringify(readingHistory));
     
-    if (isFirebaseActive && currentUser && db) {
-      db.collection('users').doc(currentUser.uid).collection('history').doc(sessionReport.id).set(sessionReport)
-        .catch(e => console.error("Failed to save session to cloud database:", e));
+    if (isFirebaseActive && currentUser) {
+      localStorage.setItem(`lumina_history_${currentUser.uid}`, JSON.stringify(readingHistory));
+      if (db) {
+        db.collection('users').doc(currentUser.uid).collection('history').doc(sessionReport.id).set(sessionReport)
+          .catch(e => console.error("Failed to save session to cloud database:", e));
+      }
+    } else {
+      localStorage.setItem('lumina_reading_history', JSON.stringify(readingHistory));
     }
     
     loadDashboardHistory(); // Refresh dashboard list
