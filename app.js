@@ -903,7 +903,16 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const info = accents[selectedAccent] || { flag: '🇺🇸', name: 'US English' };
-    if (practiceAccentFlag) practiceAccentFlag.textContent = info.flag;
+    if (practiceAccentFlag) {
+      const countryCode = selectedAccent.split('-')[1].toLowerCase();
+      const img = practiceAccentFlag.querySelector('img');
+      if (img) {
+        img.src = `https://flagcdn.com/w20/${countryCode}.png`;
+        img.alt = info.name + ' Flag';
+      } else {
+        practiceAccentFlag.textContent = info.flag;
+      }
+    }
     if (practiceAccentName) practiceAccentName.textContent = info.name;
 
     // Highlight the active button in the accent grid
