@@ -1342,6 +1342,36 @@ document.addEventListener('DOMContentLoaded', () => {
         synth.getVoices();
       };
     }
+
+    // Theme Toggle Logic
+    const themeToggle = document.getElementById('theme-toggle');
+    const sunIcon = themeToggle.querySelector('.sun-icon');
+    const moonIcon = themeToggle.querySelector('.moon-icon');
+    
+    // Check saved preference
+    const savedTheme = localStorage.getItem('lumina_theme') || 'dark';
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'block';
+    } else {
+      document.body.classList.remove('light-theme');
+      sunIcon.style.display = 'block';
+      moonIcon.style.display = 'none';
+    }
+    
+    themeToggle.addEventListener('click', () => {
+      const isLight = document.body.classList.toggle('light-theme');
+      if (isLight) {
+        localStorage.setItem('lumina_theme', 'light');
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+      } else {
+        localStorage.setItem('lumina_theme', 'dark');
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+      }
+    });
   }
 
   // Run the initializer

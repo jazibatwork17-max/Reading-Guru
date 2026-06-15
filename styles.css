@@ -35,6 +35,63 @@
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
+/* ==========================================
+   LIGHT THEME (APPLE AESTHETICS)
+   ========================================= */
+body.light-theme {
+  --bg-primary: #f5f5f7;
+  --bg-secondary: #ffffff;
+  --panel-bg: rgba(255, 255, 255, 0.72);
+  --panel-border: rgba(0, 0, 0, 0.08);
+  --panel-border-hover: rgba(0, 0, 0, 0.16);
+  
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-muted: #86868b;
+  
+  --color-primary: #0071e3; /* Apple Blue */
+  --color-primary-glow: rgba(0, 113, 227, 0.12);
+  --color-secondary: #86868b;
+  --color-accent: #0071e3;
+  
+  --color-success: #34c759; /* iOS Green */
+  --color-success-glow: rgba(52, 199, 89, 0.12);
+  --color-error: #ff3b30; /* iOS Red */
+  --color-error-glow: rgba(255, 59, 48, 0.12);
+  --color-warning: #ff9500; /* iOS Orange */
+  --color-warning-glow: rgba(255, 149, 0, 0.12);
+  
+  background-color: #f5f5f7;
+  background-image: none;
+}
+
+/* Theme overrides for specific components */
+body.light-theme .word.pending {
+  color: rgba(29, 29, 31, 0.22);
+}
+
+body.light-theme .radial-track {
+  stroke: rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .custom-card {
+  background: rgba(0, 0, 0, 0.01);
+}
+
+body.light-theme .meta-stat-item {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+body.light-theme .form-control {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+/* Smooth transitions for theme switching */
+body, header, .glass-panel, .word, .nav-btn, .btn, .form-control, .modal-content, .stat-small-card, .analysis-word, .theme-toggle-btn {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform var(--transition-fast);
+}
+
 /* =================================*********
    BASE STYLES
    ========================================= */
@@ -138,6 +195,31 @@ header {
   background: rgba(99, 102, 241, 0.15);
   border-color: rgba(99, 102, 241, 0.3);
   box-shadow: 0 0 15px rgba(99, 102, 241, 0.1);
+}
+
+.theme-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--panel-border);
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+  margin-left: 0.5rem;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--panel-border-hover);
+  transform: scale(1.03);
+}
+
+body.light-theme .theme-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.04);
 }
 
 /* =================================*********
@@ -375,7 +457,7 @@ main {
 .modal-content {
   width: 100%;
   max-width: 600px;
-  background: #0f172a;
+  background: var(--bg-secondary);
   border: 1px solid var(--panel-border-hover);
   border-radius: 16px;
   overflow: hidden;
