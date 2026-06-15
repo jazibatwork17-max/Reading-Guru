@@ -6,8 +6,38 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
+  // FIREBASE INITIALIZATION & CONFIGURATION
+  // ==========================================
+  // Paste your web credentials here to activate cloud user syncing.
+  const firebaseConfig = {
+    apiKey: "AIzaSyAgvc2dL6M79EFuRu7OF0QvdWnZD8KmZek",
+    authDomain: "reading-guru-5c41e.firebaseapp.com",
+    projectId: "reading-guru-5c41e",
+    storageBucket: "reading-guru-5c41e.firebasestorage.app",
+    messagingSenderId: "1052500647870",
+    appId: "1:1052500647870:web:0a74cb6549d99b1ae963ef"
+  };
+
+  let auth = null;
+  let db = null;
+  let isFirebaseActive = false;
+
+  // Initialize Firebase compat mode if config is updated
+  if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+    try {
+      firebase.initializeApp(firebaseConfig);
+      auth = firebase.auth();
+      db = firebase.firestore();
+      isFirebaseActive = true;
+    } catch (e) {
+      console.warn("Failed to initialize Firebase:", e);
+    }
+  }
+
+  // ==========================================
   // STATE MANAGEMENT
   // ==========================================
+  let currentUser = null;
   let activePassage = null;
   let originalWords = [];         // Array of objects representing the original passage words
   let spokenWordsAccumulated = []; // All final spoken words from the SpeechRecognition session
@@ -120,6 +150,33 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnStartReading = document.getElementById('btn-start-reading');
   const accentGrid = document.getElementById('accent-grid');
 
+  // Firebase Auth DOM Elements
+  const cloudModeBadge = document.getElementById('cloud-mode-badge');
+  const btnAuthTrigger = document.getElementById('btn-auth-trigger');
+  const userProfileMenu = document.getElementById('user-profile-menu');
+  const btnProfileToggle = document.getElementById('btn-profile-toggle');
+  const userAvatarChar = document.getElementById('user-avatar-char');
+  const userDropdownCard = document.getElementById('user-dropdown-card');
+  const userDisplayName = document.getElementById('user-display-name');
+  const userDisplayEmail = document.getElementById('user-display-email');
+  const btnSignOut = document.getElementById('btn-sign-out');
+  
+  const modalAuth = document.getElementById('modal-auth');
+  const btnCloseAuthModal = document.getElementById('btn-close-auth-modal');
+  const authErrorBanner = document.getElementById('auth-error-banner');
+  const authErrorMsg = document.getElementById('auth-error-msg');
+  
+  const formSignIn = document.getElementById('form-sign-in');
+  const signinEmail = document.getElementById('signin-email');
+  const signinPassword = document.getElementById('signin-password');
+  const linkShowSignup = document.getElementById('link-show-signup');
+  
+  const formSignUp = document.getElementById('form-sign-up');
+  const signupName = document.getElementById('signup-name');
+  const signupEmail = document.getElementById('signup-email');
+  const signupPassword = document.getElementById('signup-password');
+  const linkShowSignin = document.getElementById('link-show-signin');
+
   // ==========================================
   // INIT & PASSAGE LOADING
   // ==========================================
@@ -128,7 +185,110 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDashboardHistory();
     setupSpeechRecognition();
     setupEventListeners();
+    initAuthListener();
     showView('dashboard');
+  }
+
+  // ==========================================
+  // FIREBASE AUTHENTICATION & SYNC MANAGEMENT
+  // ==========================================
+  function initAuthListener() {
+    if (!isFirebaseActive || !auth) {
+      updateCloudStatusUI('local');
+      return;
+    }
+
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        currentUser = user;
+        updateCloudStatusUI('cloud');
+        
+        // Hide standard sign-in button, show profile dropdown menu
+        btnAuthTrigger.style.display = 'none';
+        userProfileMenu.style.display = 'block';
+        
+        const displayName = user.displayName || user.email.split('@')[0];
+        userDisplayName.textContent = displayName;
+        userDisplayEmail.textContent = user.email;
+        userAvatarChar.textContent = displayName.charAt(0).toUpperCase();
+        
+        // Synchronize local browser cache with Firestore
+        await syncUserHistory(user.uid);
+      } else {
+        currentUser = null;
+        updateCloudStatusUI('local');
+        btnAuthTrigger.style.display = 'block';
+        userProfileMenu.style.display = 'none';
+        
+        // Restore local offline history
+        readingHistory = JSON.parse(localStorage.getItem('lumina_reading_history') || '[]');
+        loadDashboardHistory();
+      }
+    });
+  }
+
+  function updateCloudStatusUI(status) {
+    if (!cloudModeBadge) return;
+    
+    if (status === 'cloud') {
+      cloudModeBadge.className = 'cloud-mode-badge cloud';
+      cloudModeBadge.querySelector('.label').textContent = 'Cloud';
+      cloudModeBadge.title = 'Connected: Syncing to Cloud Firestore';
+    } else {
+      cloudModeBadge.className = 'cloud-mode-badge local';
+      cloudModeBadge.querySelector('.label').textContent = 'Local';
+      cloudModeBadge.title = 'Offline: Local Storage Only';
+    }
+  }
+
+  async function syncUserHistory(uid) {
+    if (!isFirebaseActive || !db) return;
+    
+    try {
+      // 1. Fetch user records from firestore
+      const snapshot = await db.collection('users').doc(uid).collection('history').orderBy('timestamp', 'asc').get();
+      const cloudHistoryMap = {};
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        cloudHistoryMap[data.id || doc.id] = data;
+      });
+      
+      // 2. Fetch local storage records
+      const localHistory = JSON.parse(localStorage.getItem('lumina_reading_history') || '[]');
+      
+      // 3. Upload local records that are not in cloud history
+      for (const localSession of localHistory) {
+        const sid = localSession.id;
+        if (!cloudHistoryMap[sid]) {
+          await db.collection('users').doc(uid).collection('history').doc(sid).set(localSession);
+          cloudHistoryMap[sid] = localSession;
+        }
+      }
+      
+      // 4. Update the local cache and readingHistory state with the full sorted list
+      const mergedHistory = Object.values(cloudHistoryMap).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      readingHistory = mergedHistory;
+      localStorage.setItem('lumina_reading_history', JSON.stringify(readingHistory));
+      
+      // 5. Reload dashboard history UI
+      loadDashboardHistory();
+      
+    } catch (e) {
+      console.error("History cloud sync failed:", e);
+    }
+  }
+
+  function showAuthError(msg) {
+    if (authErrorBanner && authErrorMsg) {
+      authErrorMsg.textContent = msg;
+      authErrorBanner.style.display = 'flex';
+    }
+  }
+
+  function clearAuthError() {
+    if (authErrorBanner) {
+      authErrorBanner.style.display = 'none';
+    }
   }
 
   function showView(viewName) {
@@ -1054,6 +1214,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     readingHistory.push(sessionReport);
     localStorage.setItem('lumina_reading_history', JSON.stringify(readingHistory));
+    
+    if (isFirebaseActive && currentUser && db) {
+      db.collection('users').doc(currentUser.uid).collection('history').doc(sessionReport.id).set(sessionReport)
+        .catch(e => console.error("Failed to save session to cloud database:", e));
+    }
+    
     loadDashboardHistory(); // Refresh dashboard list
     
     // 4. Render Report
@@ -1468,6 +1634,136 @@ document.addEventListener('DOMContentLoaded', () => {
         // Pre-fetch voices into browser cache
         synth.getVoices();
       };
+    }
+
+    // ==========================================
+    // USER AUTHENTICATION EVENT LISTENERS
+    // ==========================================
+    // Toggle dropdown profile menu card
+    if (btnProfileToggle) {
+      btnProfileToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userProfileMenu.classList.toggle('active');
+      });
+    }
+
+    // Close dropdown menu when clicking anywhere else
+    document.addEventListener('click', () => {
+      if (userProfileMenu && userProfileMenu.classList.contains('active')) {
+        userProfileMenu.classList.remove('active');
+      }
+    });
+
+    // Open Auth Modal
+    if (btnAuthTrigger) {
+      btnAuthTrigger.addEventListener('click', () => {
+        if (modalAuth) {
+          clearAuthError();
+          // Reset forms to default (show sign in, hide sign up)
+          formSignIn.style.display = 'block';
+          formSignUp.style.display = 'none';
+          document.getElementById('auth-modal-title').textContent = 'Sign In to Reading Guru';
+          modalAuth.classList.add('active');
+        }
+      });
+    }
+
+    // Close Auth Modal
+    if (btnCloseAuthModal) {
+      btnCloseAuthModal.addEventListener('click', () => {
+        if (modalAuth) modalAuth.classList.remove('active');
+      });
+    }
+
+    // Toggle between Sign In and Sign Up forms
+    if (linkShowSignup) {
+      linkShowSignup.addEventListener('click', (e) => {
+        e.preventDefault();
+        clearAuthError();
+        formSignIn.style.display = 'none';
+        formSignUp.style.display = 'block';
+        document.getElementById('auth-modal-title').textContent = 'Create Reading Guru Account';
+      });
+    }
+
+    if (linkShowSignin) {
+      linkShowSignin.addEventListener('click', (e) => {
+        e.preventDefault();
+        clearAuthError();
+        formSignIn.style.display = 'block';
+        formSignUp.style.display = 'none';
+        document.getElementById('auth-modal-title').textContent = 'Sign In to Reading Guru';
+      });
+    }
+
+    // Handle Sign In submission
+    if (formSignIn) {
+      formSignIn.addEventListener('submit', (e) => {
+        e.preventDefault();
+        clearAuthError();
+        
+        const email = signinEmail.value.trim();
+        const password = signinPassword.value;
+        
+        if (!isFirebaseActive || !auth) {
+          showAuthError("Firebase is not initialized. Please configure credentials in app.js.");
+          return;
+        }
+        
+        auth.signInWithEmailAndPassword(email, password)
+          .then(() => {
+            modalAuth.classList.remove('active');
+            formSignIn.reset();
+          })
+          .catch((error) => {
+            console.error(error);
+            showAuthError(error.message || "Failed to sign in. Check email and password.");
+          });
+      });
+    }
+
+    // Handle Sign Up submission
+    if (formSignUp) {
+      formSignUp.addEventListener('submit', (e) => {
+        e.preventDefault();
+        clearAuthError();
+        
+        const name = signupName.value.trim();
+        const email = signupEmail.value.trim();
+        const password = signupPassword.value;
+        
+        if (!isFirebaseActive || !auth) {
+          showAuthError("Firebase is not initialized. Please configure credentials in app.js.");
+          return;
+        }
+        
+        auth.createUserWithEmailAndPassword(email, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            return user.updateProfile({ displayName: name });
+          })
+          .then(() => {
+            modalAuth.classList.remove('active');
+            formSignUp.reset();
+          })
+          .catch((error) => {
+            console.error(error);
+            showAuthError(error.message || "Failed to create account.");
+          });
+      });
+    }
+
+    // Handle Sign Out click
+    if (btnSignOut) {
+      btnSignOut.addEventListener('click', () => {
+        if (isFirebaseActive && auth) {
+          auth.signOut()
+            .then(() => {
+              if (userProfileMenu) userProfileMenu.classList.remove('active');
+            })
+            .catch((error) => console.error("Sign out error:", error));
+        }
+      });
     }
 
     // Theme Toggle Logic
