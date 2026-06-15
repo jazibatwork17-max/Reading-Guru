@@ -1591,14 +1591,16 @@ textarea.form-control {
 
 .btn-auth-trigger {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 0.25rem;
   background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 0.45rem 0.9rem;
-  font-size: 0.85rem;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.75rem;
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
