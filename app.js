@@ -907,7 +907,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const countryCode = selectedAccent.split('-')[1].toLowerCase();
       const img = practiceAccentFlag.querySelector('img');
       if (img) {
-        img.src = `https://flagcdn.com/w20/${countryCode}.png`;
+        img.src = `https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/${countryCode}.svg`;
         img.alt = info.name + ' Flag';
       } else {
         practiceAccentFlag.textContent = info.flag;
