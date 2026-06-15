@@ -176,6 +176,10 @@ header {
   gap: 1rem;
 }
 
+.mobile-nav {
+  display: none;
+}
+
 .nav-btn {
   background: transparent;
   border: 1px solid transparent;
@@ -1481,8 +1485,13 @@ textarea.form-control {
     height: 20px;
   }
   
-  /* Reposition Navigation links to a clean native-like bottom tab bar */
+  /* Hide desktop navigation inside header */
   .nav-links {
+    display: none !important;
+  }
+  
+  /* Mobile Bottom Navigation Bar (Independent container) */
+  .mobile-nav {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -1500,40 +1509,34 @@ textarea.form-control {
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15);
   }
   
-  .nav-btn {
+  .mobile-nav-btn {
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 0.2rem;
     padding: 0.35rem 0.5rem;
     font-size: 0.7rem;
+    font-family: var(--font-ui);
+    font-weight: 500;
     color: var(--text-secondary);
     background: transparent;
     border: none;
-    border-radius: 6px;
+    cursor: pointer;
     flex: 1;
     max-width: 100px;
-    border-color: transparent;
-    box-shadow: none;
+    transition: var(--transition-fast);
   }
 
-  .nav-btn.active {
+  .mobile-nav-btn.active {
     color: var(--color-primary);
     background: rgba(99, 102, 241, 0.08);
-    border-color: transparent;
-    box-shadow: none;
+    border-radius: 6px;
   }
   
-  .nav-btn span {
-    display: block; /* Show text under icon */
-    font-size: 0.7rem;
-    font-weight: 500;
-  }
-  
-  .nav-btn svg {
+  .mobile-nav-btn svg {
     width: 20px;
     height: 20px;
-    margin-right: 0 !important;
   }
   
   .theme-toggle-btn {

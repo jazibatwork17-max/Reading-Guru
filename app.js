@@ -77,9 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // DOM ELEMENT SELECTIONS
   // ==========================================
   // Navigation
-  const navDashboard = document.getElementById('nav-dashboard');
-  const navLibrary = document.getElementById('nav-library');
-  const navReport = document.getElementById('nav-report');
+  // Navigation elements are selected dynamically via document.querySelectorAll('.nav-*')
   
   // Views
   const viewDashboard = document.getElementById('view-dashboard');
@@ -309,27 +307,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function updateNavActiveState(tabName) {
+    document.querySelectorAll('.nav-dashboard, .nav-library, .nav-report').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    document.querySelectorAll(`.nav-${tabName}`).forEach(btn => {
+      btn.classList.add('active');
+    });
+  }
+
   function showView(viewName) {
     // Hide all views
     viewDashboard.classList.remove('active-view');
     viewPractice.classList.remove('active-view');
     viewReport.classList.remove('active-view');
     
-    // Deactivate nav links
-    navDashboard.classList.remove('active');
-    navLibrary.classList.remove('active');
-    if (navReport) navReport.classList.remove('active');
-    
-    // Show requested view
+    // Deactivate and activate nav links across both desktop & mobile menus
     if (viewName === 'dashboard') {
       viewDashboard.classList.add('active-view');
-      navDashboard.classList.add('active');
+      updateNavActiveState('dashboard');
     } else if (viewName === 'practice') {
       viewPractice.classList.add('active-view');
-      navLibrary.classList.add('active');
+      updateNavActiveState('library'); // Practice uses Library tab active state
     } else if (viewName === 'report') {
       viewReport.classList.add('active-view');
-      if (navReport) navReport.classList.add('active');
+      document.querySelectorAll('.nav-report').forEach(btn => btn.style.display = 'flex');
+      updateNavActiveState('report');
     }
   }
 
@@ -1523,30 +1526,34 @@ document.addEventListener('DOMContentLoaded', () => {
   // EVENT LISTENERS & MODAL HANDLERS
   // ==========================================
   function setupEventListeners() {
-    // Navigation
-    navDashboard.addEventListener('click', (e) => {
-      e.preventDefault();
-      showView('dashboard');
+    // Navigation (Desktop & Mobile)
+    document.querySelectorAll('.nav-dashboard').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        showView('dashboard');
+      });
     });
     
-    navLibrary.addEventListener('click', (e) => {
-      e.preventDefault();
-      showView('dashboard');
-      // Scroll to library section
-      const librarySection = document.querySelector('.library-title');
-      if (librarySection) {
-        librarySection.scrollIntoView({ behavior: 'smooth' });
-      }
+    document.querySelectorAll('.nav-library').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        showView('dashboard');
+        // Scroll to library section
+        const librarySection = document.querySelector('.library-title');
+        if (librarySection) {
+          librarySection.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
     });
     
-    if (navReport) {
-      navReport.addEventListener('click', (e) => {
+    document.querySelectorAll('.nav-report').forEach(btn => {
+      btn.addEventListener('click', (e) => {
         e.preventDefault();
         if (readingHistory.length > 0) {
           showSavedReport(readingHistory[readingHistory.length - 1]);
         }
       });
-    }
+    });
     
     // Back to library button in Practice room
     backToLibraryBtn.addEventListener('click', () => {
