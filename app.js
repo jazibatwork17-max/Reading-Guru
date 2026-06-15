@@ -1007,7 +1007,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Bind click handler for detailed pronunciation helper
       span.addEventListener('click', () => {
-        selectWordForExplanation(wordObj);
+        selectWordForExplanation(wordObj, true);
       });
       
       analysisWordsContainer.appendChild(span);
@@ -1016,10 +1016,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Reset explanation card
     explanationCard.classList.remove('active');
     
-    // Auto-select the first mistake if any exists
+    // Auto-select the first mistake if any exists (no autoplay)
     const firstMistake = report.wordsData.find(w => w.status === 'mispronounced' || w.status === 'skipped');
     if (firstMistake) {
-      selectWordForExplanation(firstMistake);
+      selectWordForExplanation(firstMistake, false);
     }
     
     showView('report');
@@ -1045,7 +1045,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // WORD DICTIONARY & PRONUNCIATION EXPLANATION
   // ==========================================
-  async function selectWordForExplanation(wordObj) {
+  async function selectWordForExplanation(wordObj, autoPlaySpeech = false) {
     // Show panel
     explanationCard.classList.add('active');
     
@@ -1095,6 +1095,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // Fallback
       explainPhonetic.textContent = '';
       dictDefinition.textContent = 'Dictionary details unavailable (offline fallback active). Use the speaker button to hear correct pronunciation.';
+    }
+    
+    // Autoplay pronunciation audio if requested
+    if (autoPlaySpeech) {
+      speakWord(cleanWord);
     }
   }
 
