@@ -35,6 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // History state
   let readingHistory = JSON.parse(localStorage.getItem('lumina_reading_history') || '[]');
 
+  // Accent state
+  let selectedAccent = localStorage.getItem('guru_accent') || 'en-US';
+
   // Tap-to-read & browser speech-backend detection state
   let isTapToReadActive = false;
   let speechTimeout = null;
@@ -107,6 +110,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Report action buttons
   const btnRetryReading = document.getElementById('btn-retry-reading');
   const btnNewReading = document.getElementById('btn-new-reading');
+
+  // Accent calibration selectors
+  const practiceAccentBtn = document.getElementById('practice-accent-btn');
+  const practiceAccentFlag = document.getElementById('practice-accent-flag');
+  const practiceAccentName = document.getElementById('practice-accent-name');
+  const practiceSetupCard = document.getElementById('practice-setup-card');
+  const practiceActiveFooter = document.getElementById('practice-active-footer');
+  const btnStartReading = document.getElementById('btn-start-reading');
+  const accentGrid = document.getElementById('accent-grid');
 
   // ==========================================
   // INIT & PASSAGE LOADING
@@ -294,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
     recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = 'en-US';
+    recognition.lang = selectedAccent;
     
     recognition.onstart = () => {
       isRecording = true;
@@ -691,6 +703,41 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // PRACTICE CONTROLS
   // ==========================================
+  function updateAccentBadgeUI() {
+    const accents = {
+      'en-US': { flag: '🇺🇸', name: 'US English' },
+      'en-GB': { flag: '🇬🇧', name: 'UK English' },
+      'en-PK': { flag: '🇵🇰', name: 'Pakistani' },
+      'en-IN': { flag: '🇮🇳', name: 'Indian' },
+      'en-AU': { flag: '🇦🇺', name: 'Australian' },
+      'en-CA': { flag: '🇨🇦', name: 'Canadian' },
+      'en-NZ': { flag: '🇳🇿', name: 'New Zealand' },
+      'en-ZA': { flag: '🇿🇦', name: 'South African' },
+      'en-IE': { flag: '🇮🇪', name: 'Irish' },
+      'en-SG': { flag: '🇸🇬', name: 'Singaporean' },
+      'en-PH': { flag: '🇵🇭', name: 'Philippine' },
+      'en-NG': { flag: '🇳🇬', name: 'Nigerian' },
+      'en-KE': { flag: '🇰🇪', name: 'Kenyan' },
+      'en-GH': { flag: '🇬🇭', name: 'Ghanaian' }
+    };
+    
+    const info = accents[selectedAccent] || { flag: '🇺🇸', name: 'US English' };
+    if (practiceAccentFlag) practiceAccentFlag.textContent = info.flag;
+    if (practiceAccentName) practiceAccentName.textContent = info.name;
+
+    // Highlight the active button in the accent grid
+    if (accentGrid) {
+      const buttons = accentGrid.querySelectorAll('.accent-btn');
+      buttons.forEach(btn => {
+        if (btn.getAttribute('data-lang') === selectedAccent) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+  }
+
   function startPracticeSession(passage) {
     activePassage = passage;
     
@@ -739,6 +786,11 @@ document.addEventListener('DOMContentLoaded', () => {
     practiceTime.textContent = '00:00';
     secondsElapsed = 0;
     
+    // Setup accent calibration state view
+    if (practiceSetupCard) practiceSetupCard.style.display = 'flex';
+    if (practiceActiveFooter) practiceActiveFooter.style.display = 'none';
+    updateAccentBadgeUI();
+
     // Load words in container
     readingTextContainer.innerHTML = '';
     originalWords.forEach((wordObj, i) => {
@@ -1177,10 +1229,21 @@ document.addEventListener('DOMContentLoaded', () => {
     utterance.rate = 0.82; // Speak slightly slower for educational clarity
     utterance.pitch = 1.0;
     
-    // Try to find a nice English voice
+    // Find a voice matching selectedAccent dialect
     const voices = synth.getVoices();
-    const englishVoice = voices.find(v => v.lang.startsWith('en-') && v.name.includes('Google'));
-    if (englishVoice) utterance.voice = englishVoice;
+    let matchedVoice = voices.find(v => v.lang.toLowerCase() === selectedAccent.toLowerCase());
+    
+    // If Pakistani English en-PK is chosen, try Indian en-IN as closest regional voice
+    if (!matchedVoice && selectedAccent === 'en-PK') {
+      matchedVoice = voices.find(v => v.lang.toLowerCase() === 'en-in');
+    }
+    
+    // Fallback: standard Google English voice or any English voice
+    if (!matchedVoice) {
+      matchedVoice = voices.find(v => v.lang.startsWith('en-') && v.name.includes('Google')) || voices.find(v => v.lang.startsWith('en-'));
+    }
+    
+    if (matchedVoice) utterance.voice = matchedVoice;
     
     synth.speak(utterance);
   }
@@ -1337,6 +1400,45 @@ document.addEventListener('DOMContentLoaded', () => {
       // Launch practice
       startPracticeSession(customPassage);
     });
+
+    // Accent Selector grid selection click handlers
+    if (accentGrid) {
+      accentGrid.addEventListener('click', (e) => {
+        const btn = e.target.closest('.accent-btn');
+        if (btn) {
+          selectedAccent = btn.getAttribute('data-lang');
+          updateAccentBadgeUI();
+        }
+      });
+    }
+
+    // Confirm & Start Reading button click
+    if (btnStartReading) {
+      btnStartReading.addEventListener('click', () => {
+        localStorage.setItem('guru_accent', selectedAccent);
+        if (recognition) {
+          recognition.lang = selectedAccent;
+        }
+        
+        // Hide calibration panel, show recording controls
+        if (practiceSetupCard) practiceSetupCard.style.display = 'none';
+        if (practiceActiveFooter) practiceActiveFooter.style.display = 'flex';
+        
+        updateAccentBadgeUI();
+      });
+    }
+
+    // Header accent badge click handler (re-open setup/calibration)
+    if (practiceAccentBtn) {
+      practiceAccentBtn.addEventListener('click', () => {
+        if (isRecording) {
+          stopRecording();
+        }
+        if (practiceSetupCard) practiceSetupCard.style.display = 'flex';
+        if (practiceActiveFooter) practiceActiveFooter.style.display = 'none';
+        updateAccentBadgeUI();
+      });
+    }
     
     // Recording controls
     recordBtn.addEventListener('click', toggleRecording);

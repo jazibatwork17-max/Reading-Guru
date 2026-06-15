@@ -130,6 +130,10 @@
           
           <div class="practice-meta-stats">
             <span id="practice-difficulty" class="difficulty-badge easy">Easy</span>
+            <button id="practice-accent-btn" class="accent-badge-btn" title="Change accent calibration">
+              <span id="practice-accent-flag">🇺🇸</span>
+              <span id="practice-accent-name">US English</span>
+            </button>
             <span class="meta-stat-item">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"></circle>
@@ -152,8 +156,77 @@
           </div>
         </div>
 
-        <!-- Practice Controls Footer -->
-        <div class="practice-controls">
+        <!-- Setup / Accent Selector Calibration Card -->
+        <div id="practice-setup-card" class="glass-panel practice-setup-card">
+          <div class="setup-card-header">
+            <h3>Accent Calibration</h3>
+            <p>Select your English dialect to tune speech recognition and the pronunciation guide for highest accuracy.</p>
+          </div>
+          <div class="accent-grid" id="accent-grid">
+            <button class="accent-btn" data-lang="en-US">
+              <span class="flag">🇺🇸</span>
+              <span class="accent-label">US English</span>
+            </button>
+            <button class="accent-btn" data-lang="en-GB">
+              <span class="flag">🇬🇧</span>
+              <span class="accent-label">UK English</span>
+            </button>
+            <button class="accent-btn" data-lang="en-PK">
+              <span class="flag">🇵🇰</span>
+              <span class="accent-label">Pakistani</span>
+            </button>
+            <button class="accent-btn" data-lang="en-IN">
+              <span class="flag">🇮🇳</span>
+              <span class="accent-label">Indian</span>
+            </button>
+            <button class="accent-btn" data-lang="en-AU">
+              <span class="flag">🇦🇺</span>
+              <span class="accent-label">Australian</span>
+            </button>
+            <button class="accent-btn" data-lang="en-CA">
+              <span class="flag">🇨🇦</span>
+              <span class="accent-label">Canadian</span>
+            </button>
+            <button class="accent-btn" data-lang="en-NZ">
+              <span class="flag">🇳🇿</span>
+              <span class="accent-label">New Zealand</span>
+            </button>
+            <button class="accent-btn" data-lang="en-ZA">
+              <span class="flag">🇿🇦</span>
+              <span class="accent-label">South African</span>
+            </button>
+            <button class="accent-btn" data-lang="en-IE">
+              <span class="flag">🇮🇪</span>
+              <span class="accent-label">Irish</span>
+            </button>
+            <button class="accent-btn" data-lang="en-SG">
+              <span class="flag">🇸🇬</span>
+              <span class="accent-label">Singaporean</span>
+            </button>
+            <button class="accent-btn" data-lang="en-PH">
+              <span class="flag">🇵🇭</span>
+              <span class="accent-label">Philippine</span>
+            </button>
+            <button class="accent-btn" data-lang="en-NG">
+              <span class="flag">🇳🇬</span>
+              <span class="accent-label">Nigerian</span>
+            </button>
+            <button class="accent-btn" data-lang="en-KE">
+              <span class="flag">🇰🇪</span>
+              <span class="accent-label">Kenyan</span>
+            </button>
+            <button class="accent-btn" data-lang="en-GH">
+              <span class="flag">🇬🇭</span>
+              <span class="accent-label">Ghanaian</span>
+            </button>
+          </div>
+          <button id="btn-start-reading" class="btn btn-primary btn-start-reading">
+            Confirm & Start Reading
+          </button>
+        </div>
+
+        <!-- Practice Controls Footer (Active when reading) -->
+        <div id="practice-active-footer" class="practice-controls" style="display: none;">
           <!-- Dynamic Voice wave indicator -->
           <div id="voice-wave-container" class="voice-wave-container">
             <div class="wave-bar"></div>
