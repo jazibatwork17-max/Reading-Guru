@@ -1600,9 +1600,15 @@ textarea.form-control {
   padding: 0.45rem 0.9rem;
   font-size: 0.85rem;
   font-weight: 600;
+  line-height: 1;
   cursor: pointer;
   transition: var(--transition-fast);
   box-shadow: 0 4px 10px rgba(99, 102, 241, 0.15);
+}
+
+.btn-auth-trigger svg {
+  display: block;
+  flex-shrink: 0;
 }
 
 .btn-auth-trigger:hover {
