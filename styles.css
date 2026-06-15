@@ -1468,6 +1468,10 @@ textarea.form-control {
 }
 
 @media (max-width: 640px) {
+  body {
+    padding-bottom: 75px; /* Add bottom spacing to prevent navigation bar overlapping content */
+  }
+
   .logo {
     font-size: 1.15rem;
   }
@@ -1477,16 +1481,58 @@ textarea.form-control {
     height: 20px;
   }
   
+  /* Reposition Navigation links to a clean native-like bottom tab bar */
+  .nav-links {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: var(--header-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--panel-border);
+    padding: 0.6rem 1rem;
+    gap: 0;
+    z-index: 1000;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15);
+  }
+  
   .nav-btn {
-    padding: 0.6rem 0.75rem;
-    font-size: 0.85rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    flex: 1;
+    max-width: 100px;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .nav-btn.active {
+    color: var(--color-primary);
+    background: rgba(99, 102, 241, 0.08);
+    border-color: transparent;
+    box-shadow: none;
   }
   
   .nav-btn span {
-    display: none; /* Hide text on mobile, keep only icons for layout */
+    display: block; /* Show text under icon */
+    font-size: 0.7rem;
+    font-weight: 500;
   }
   
   .nav-btn svg {
+    width: 20px;
+    height: 20px;
     margin-right: 0 !important;
   }
   
