@@ -430,24 +430,38 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // REAL-TIME ALIGNMENT ENGINE (SLIDING WINDOW)
   // ==========================================
+  // Stop words to prevent low-entropy word matching drift
+  const COMMON_STOP_WORDS = new Set([
+    'the', 'a', 'an', 'and', 'or', 'but', 'of', 'to', 'in', 'on', 'at', 'by', 
+    'for', 'with', 'about', 'from', 'up', 'down', 'is', 'am', 'are', 'was', 
+    'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 
+    'i', 'you', 'he', 'she', 'it', 'we', 'they', 'my', 'your', 'his', 'her', 
+    'its', 'our', 'their', 'this', 'that', 'these', 'those'
+  ]);
+
   function alignRealTime(spokenWords) {
     if (spokenWords.length === 0 || originalWords.length === 0) return;
     
-    // We look at the words in the transcript starting from our last aligned spoken word index
-    const startIndex = lastAlignedSpokenIdx + 1;
-    if (startIndex >= spokenWords.length) return;
+    // Reset all original words to pending status for a clean, stateless rebuild
+    originalWords.forEach(w => {
+      w.status = 'pending';
+      w.spokenText = null;
+    });
     
-    const lookaheadLimit = 6; // How many words in original text to search
+    let origIdx = 0;
     
-    for (let s = startIndex; s < spokenWords.length; s++) {
+    for (let s = 0; s < spokenWords.length; s++) {
       const spokenWord = spokenWords[s];
       let bestMatchIdx = -1;
       let isPerfect = false;
       let minDistance = 999;
       
-      // Look ahead in the original words starting from the last aligned original index + 1
-      const startOrig = lastAlignedOriginalIdx + 1;
-      const endOrig = Math.min(originalWords.length, startOrig + lookaheadLimit);
+      // Look back up to 2 words from current expected origIdx to recover from incorrect jumps
+      const startOrig = Math.max(0, origIdx - 2);
+      
+      // Stop words can only lookahead 2 words; content words lookahead 6 words
+      const lookaheadLimit = COMMON_STOP_WORDS.has(spokenWord) ? 2 : 6;
+      const endOrig = Math.min(originalWords.length, origIdx + lookaheadLimit);
       
       for (let o = startOrig; o < endOrig; o++) {
         const origWord = originalWords[o].normalized;
@@ -468,11 +482,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
       
-      // If we found a match (exact or close) in our lookahead window
+      // If we found a match (exact or close) in our lookahead/lookback window
       if (bestMatchIdx !== -1) {
-        // 1. Mark skipped words in between
-        for (let o = lastAlignedOriginalIdx + 1; o < bestMatchIdx; o++) {
-          originalWords[o].status = 'skipped';
+        // 1. Mark skipped words in between (only if they are currently pending)
+        for (let o = origIdx; o < bestMatchIdx; o++) {
+          if (originalWords[o].status === 'pending') {
+            originalWords[o].status = 'skipped';
+          }
         }
         
         // 2. Mark the matched word
@@ -483,11 +499,20 @@ document.addEventListener('DOMContentLoaded', () => {
           originalWords[bestMatchIdx].spokenText = spokenWord;
         }
         
-        // 3. Advance pointers
-        lastAlignedOriginalIdx = bestMatchIdx;
-        lastAlignedSpokenIdx = s;
+        // 3. Advance pointer to the next word after the matched word
+        origIdx = bestMatchIdx + 1;
       }
     }
+    
+    // Find the last aligned original index to update UI highlights correctly
+    let lastAligned = -1;
+    for (let o = originalWords.length - 1; o >= 0; o--) {
+      if (originalWords[o].status === 'correct' || originalWords[o].status === 'mispronounced') {
+        lastAligned = o;
+        break;
+      }
+    }
+    lastAlignedOriginalIdx = lastAligned;
     
     // Update active highlight style in HTML
     updateReadingBoardUI();
