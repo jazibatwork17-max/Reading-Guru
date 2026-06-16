@@ -556,6 +556,11 @@ main {
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
+.form-control option {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
 textarea.form-control {
   resize: vertical;
   min-height: 150px;
