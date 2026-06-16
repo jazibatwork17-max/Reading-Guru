@@ -1595,6 +1595,30 @@ document.addEventListener('DOMContentLoaded', () => {
       modalCustom.classList.remove('active');
     });
     
+    // Custom text counter update
+    const customTextCounter = document.getElementById('custom-text-counter');
+    if (customTextTextarea && customTextCounter) {
+      customTextTextarea.addEventListener('input', () => {
+        const text = customTextTextarea.value.trim();
+        const words = text ? text.split(/\s+/).filter(w => w.length > 0) : [];
+        customTextCounter.textContent = `${words.length.toLocaleString()} / 1,000 words`;
+        
+        if (words.length > 1000) {
+          customTextCounter.style.color = 'var(--color-error)';
+        } else {
+          customTextCounter.style.color = 'var(--text-secondary)';
+        }
+      });
+    }
+
+    // Custom passage form reset handler (resets counter display)
+    formCustom.addEventListener('reset', () => {
+      if (customTextCounter) {
+        customTextCounter.textContent = '0 / 1,000 words';
+        customTextCounter.style.color = 'var(--text-secondary)';
+      }
+    });
+
     // Custom passage form submission
     formCustom.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -1604,6 +1628,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const difficulty = customDifficultySelect.value;
       
       if (!text) return;
+      
+      // Word limit validation (1,000 words)
+      const words = text.split(/\s+/).filter(w => w.length > 0);
+      if (words.length > 1000) {
+        alert(`Your text is too long (${words.length} words). Please keep your passage under 1,000 words to ensure smooth pronunciation alignment and performance.`);
+        return;
+      }
       
       const customPassage = {
         id: `custom-${Date.now()}`,

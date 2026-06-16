@@ -18,7 +18,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
 
@@ -485,6 +485,7 @@
           <div class="form-group">
             <label for="custom-text">Reading Passage</label>
             <textarea id="custom-text" class="form-control" placeholder="Paste your reading text here..." required></textarea>
+            <div id="custom-text-counter" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.4rem; text-align: right;">0 / 1,000 words</div>
           </div>
         </div>
         <div class="modal-footer">
@@ -576,7 +577,7 @@
   </div>
 
   <!-- Scripts -->
-  <script src="texts.js?v=4"></script>
+  <script src="texts.js?v=5"></script>
   <!-- Mobile Bottom Navigation Bar -->
   <nav class="mobile-nav">
     <button class="mobile-nav-btn nav-dashboard active">
@@ -607,6 +608,6 @@
     </button>
   </nav>
 
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
