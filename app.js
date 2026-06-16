@@ -1572,6 +1572,15 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isRecording) stopRecording();
       showView('dashboard');
     });
+
+    // Logo home click handler
+    const appLogo = document.getElementById('app-logo');
+    if (appLogo) {
+      appLogo.addEventListener('click', () => {
+        if (isRecording) stopRecording();
+        showView('dashboard');
+      });
+    }
     
     // Custom passage modal controls
     btnCloseModal.addEventListener('click', () => {

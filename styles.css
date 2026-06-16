@@ -164,6 +164,14 @@ header {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.logo:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
 }
 
 .logo svg {
