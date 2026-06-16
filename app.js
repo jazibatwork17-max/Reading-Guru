@@ -147,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const practiceActiveFooter = document.getElementById('practice-active-footer');
   const btnStartReading = document.getElementById('btn-start-reading');
   const accentGrid = document.getElementById('accent-grid');
+  const practiceLayout = viewPractice ? viewPractice.querySelector('.practice-layout') : null;
 
   // Firebase Auth DOM Elements
   const cloudModeBadge = document.getElementById('cloud-mode-badge');
@@ -979,6 +980,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup accent calibration state view
     if (practiceSetupCard) practiceSetupCard.style.display = 'flex';
     if (practiceActiveFooter) practiceActiveFooter.style.display = 'none';
+    if (practiceLayout) practiceLayout.classList.add('in-setup-mode');
     updateAccentBadgeUI();
 
     // Load words in container
@@ -1627,6 +1629,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Hide calibration panel, show recording controls
         if (practiceSetupCard) practiceSetupCard.style.display = 'none';
         if (practiceActiveFooter) practiceActiveFooter.style.display = 'flex';
+        if (practiceLayout) practiceLayout.classList.remove('in-setup-mode');
         
         updateAccentBadgeUI();
       });
@@ -1640,6 +1643,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (practiceSetupCard) practiceSetupCard.style.display = 'flex';
         if (practiceActiveFooter) practiceActiveFooter.style.display = 'none';
+        if (practiceLayout) practiceLayout.classList.add('in-setup-mode');
         updateAccentBadgeUI();
       });
     }

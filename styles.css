@@ -1586,6 +1586,11 @@ textarea.form-control {
     overflow-y: auto;
     padding: 1.25rem; /* Reduce padding for reading text container */
     margin-bottom: 0.25rem;
+    min-height: 0; /* Allow the reading board to shrink below desktop min-height */
+  }
+
+  .practice-layout.in-setup-mode .reading-board {
+    display: none;
   }
   
   .reading-text {
@@ -1653,7 +1658,7 @@ textarea.form-control {
   .accent-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
-    max-height: 260px;
+    max-height: 160px; /* Reduced from 260px to fit mobile viewports */
   }
   
   .accent-btn {
@@ -1667,6 +1672,15 @@ textarea.form-control {
   
   .practice-setup-card {
     padding: 1.25rem 1rem;
+    gap: 1.0rem; /* Reduced from 1.5rem to save height */
+  }
+
+  .setup-card-header h3 {
+    font-size: 1.15rem !important;
+  }
+
+  .setup-card-header p {
+    font-size: 0.8rem !important;
   }
 }
 
