@@ -1578,6 +1578,7 @@ textarea.form-control {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 165px); /* Header + Bottom Nav + padding */
+    height: calc(100dvh - 165px); /* Dynamic height for mobile browsers */
     gap: 0.5rem;
   }
 
@@ -1673,6 +1674,8 @@ textarea.form-control {
   .practice-setup-card {
     padding: 1.25rem 1rem;
     gap: 1.0rem; /* Reduced from 1.5rem to save height */
+    max-height: 100%;
+    overflow-y: auto;
   }
 
   .setup-card-header h3 {
