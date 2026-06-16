@@ -318,6 +318,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showView(viewName) {
+    // Auto-stop recording if leaving the practice room
+    if (viewName !== 'practice' && isRecording) {
+      stopRecording();
+    }
+
     // Hide all views
     viewDashboard.classList.remove('active-view');
     viewPractice.classList.remove('active-view');
