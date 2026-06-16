@@ -311,8 +311,46 @@ main {
 
 .library-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.75rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+.library-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.column-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.column-header {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.column-header.easy {
+  color: var(--color-success);
+  border-bottom-color: rgba(16, 185, 129, 0.2);
+}
+
+.column-header.medium {
+  color: var(--color-warning);
+  border-bottom-color: rgba(245, 158, 11, 0.2);
+}
+
+.column-header.hard {
+  color: var(--color-error);
+  border-bottom-color: rgba(239, 68, 68, 0.2);
 }
 
 .passage-card {
@@ -422,12 +460,30 @@ main {
   border-width: 2px;
   background: rgba(255, 255, 255, 0.01);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
-  min-height: 250px;
-  text-align: center;
-  gap: 1rem;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  grid-column: span 3;
+  width: 100%;
+}
+
+.custom-card-text {
+  text-align: left;
+}
+
+.custom-card-text h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.custom-card-text p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 0;
 }
 
 .custom-card:hover {
@@ -1296,6 +1352,26 @@ textarea.form-control {
   
   main {
     padding: 1.5rem 1rem;
+  }
+
+  .library-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .library-column {
+    gap: 1.25rem;
+  }
+
+  .custom-card {
+    grid-column: span 1;
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem 1.5rem;
+  }
+
+  .custom-card-text {
+    text-align: center;
   }
 }
 

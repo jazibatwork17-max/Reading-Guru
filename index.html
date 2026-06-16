@@ -18,7 +18,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   
-  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="styles.css?v=7">
 </head>
 <body>
 
@@ -148,7 +148,18 @@
       <section>
         <h2 style="font-size: 1.4rem; font-weight: 600; margin-bottom: 1.25rem;">Reading Library</h2>
         <div id="library-grid" class="library-grid">
-          <!-- Dynamically populated -->
+          <div class="library-column easy">
+            <h3 class="column-header easy">Easy</h3>
+            <div class="column-cards" id="col-easy-cards"></div>
+          </div>
+          <div class="library-column medium">
+            <h3 class="column-header medium">Medium</h3>
+            <div class="column-cards" id="col-medium-cards"></div>
+          </div>
+          <div class="library-column hard">
+            <h3 class="column-header hard">Hard</h3>
+            <div class="column-cards" id="col-hard-cards"></div>
+          </div>
         </div>
       </section>
     </div>
@@ -577,7 +588,7 @@
   </div>
 
   <!-- Scripts -->
-  <script src="texts.js?v=5"></script>
+  <script src="texts.js?v=7"></script>
   <!-- Mobile Bottom Navigation Bar -->
   <nav class="mobile-nav">
     <button class="mobile-nav-btn nav-dashboard active">
@@ -608,6 +619,6 @@
     </button>
   </nav>
 
-  <script src="app.js?v=5"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>

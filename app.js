@@ -344,14 +344,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Load predefined passages into the library grid
   function loadLibrary() {
-    libraryGrid.innerHTML = '';
+    const colEasy = document.getElementById('col-easy-cards');
+    const colMedium = document.getElementById('col-medium-cards');
+    const colHard = document.getElementById('col-hard-cards');
+    
+    // Clear previous cards inside difficulty columns
+    if (colEasy) colEasy.innerHTML = '';
+    if (colMedium) colMedium.innerHTML = '';
+    if (colHard) colHard.innerHTML = '';
+    
+    // Remove any previously appended custom card in case of reload
+    const existingCustom = libraryGrid.querySelector('.custom-card');
+    if (existingCustom) existingCustom.remove();
     
     READING_PASSAGES.forEach(passage => {
       const card = createPassageCard(passage);
-      libraryGrid.appendChild(card);
+      if (passage.difficulty === 'Easy' && colEasy) {
+        colEasy.appendChild(card);
+      } else if (passage.difficulty === 'Medium' && colMedium) {
+        colMedium.appendChild(card);
+      } else if (passage.difficulty === 'Hard' && colHard) {
+        colHard.appendChild(card);
+      }
     });
     
-    // Add custom card at the end
+    // Add custom card at the end of the grid (spans columns)
     const customCard = document.createElement('div');
     customCard.className = 'glass-panel passage-card custom-card';
     customCard.innerHTML = `
@@ -361,8 +378,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
       </div>
-      <h3>Add Custom Text</h3>
-      <p>Paste your own reading material, article, or story to practice.</p>
+      <div class="custom-card-text">
+        <h3>Add Custom Text</h3>
+        <p>Paste your own reading material, article, or story to practice.</p>
+      </div>
     `;
     customCard.addEventListener('click', () => {
       modalCustom.classList.add('active');
